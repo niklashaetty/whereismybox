@@ -10,7 +10,6 @@ using Domain.Repositories;
 using Domain.Services.BoxCreationService;
 using Domain.Services.UserCreationService;
 using Functions.Mappers;
-using Infrastructure.BoxRepository;
 using Infrastructure.UserRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,36 +21,29 @@ using Newtonsoft.Json;
 
 namespace Functions.HttpTriggers;
 
-public class GetBoxFunction
+public class ListBoxesFunction
 {
     private readonly IBoxRepository _boxRepository;
 
-    public GetBoxFunction(IBoxRepository boxRepository)
+    public ListBoxesFunction(IBoxRepository boxRepository)
     {
         ArgumentNullException.ThrowIfNull(boxRepository);
         _boxRepository = boxRepository;
     }
 
-    [OpenApiOperation(operationId: "GetBox", tags: new[] {"Boxes"}, Summary = "Get a box for a given user and all its contents")]
+    [OpenApiOperation(operationId: "ListBoxes", tags: new[] {"Boxes"}, Summary = "List all boxes and their contents for a given user")]
+    [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(CreateBoxRequest))]
     [OpenApiResponseWithBody(HttpStatusCode.Created, MediaTypeNames.Application.Json, typeof(BoxDto))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
-    [FunctionName("GetBoxFunction")]
+    [FunctionName("ListBoxesFunction")]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users/{userId}/boxes/{boxId}")]
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users/{userId}/boxes")]
         HttpRequest req,
         Guid userId,
-        Guid boxId,
         ILogger log)
     {
-        try
-        {
-            var newBox = await _boxRepository.Get(userId, boxId);
-            return new OkObjectResult(newBox.ToApiModel());
-        }
-        catch (BoxNotFoundException e)
-        {
-            return new NotFoundObjectResult(new ErrorResponse("Not found", "Box was not found"));
-        }
+        var boxes = await _boxRepository.ListBoxesByUser(userId);
+        return new OkObjectResult(boxes.Select(box => box.ToApiModel()));
     }
 }

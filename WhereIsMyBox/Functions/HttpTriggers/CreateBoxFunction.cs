@@ -8,6 +8,7 @@ using Api;
 using Domain;
 using Domain.Services.BoxCreationService;
 using Domain.Services.UserCreationService;
+using Functions.Mappers;
 using Infrastructure.UserRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -48,9 +49,7 @@ public class CreateBoxFunction
         try
         {
             var newBox = await _boxCreationService.Create(userId, createBoxRequest.Name, createBoxRequest.Number);
-            return new CreatedResult($"/api/users/{userId}/boxes/{newBox.BoxId}",
-                new BoxDto(newBox.BoxId, newBox.Name, newBox.Number,
-                    newBox.Items.Select(i => new ItemDto(i.ItemId, i.Name, i.Description)).ToList()));
+            return new CreatedResult($"/api/users/{userId}/boxes/{newBox.BoxId}", newBox.ToApiModel());
         }
         catch (UserNotFoundException e)
         {

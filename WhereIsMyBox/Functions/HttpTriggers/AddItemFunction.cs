@@ -5,8 +5,6 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
-using Domain;
-using Domain.Services.BoxCreationService;
 using Domain.Services.ItemAddingService;
 using Domain.Services.UserCreationService;
 using Infrastructure.BoxRepository;

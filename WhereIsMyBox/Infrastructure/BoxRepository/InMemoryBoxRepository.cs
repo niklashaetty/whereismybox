@@ -14,9 +14,12 @@ public class InMemoryBoxRepository : IBoxRepository
         if (Boxes.ContainsKey(userId) is false)
         {
             Boxes.Add(userId, new List<Box>{box});
+            
+        } else
+        {
+            Boxes[userId].Add(box);
         }
         
-        Boxes[userId].Add(box);
         return Task.FromResult(box);
     }
 

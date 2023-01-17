@@ -38,4 +38,10 @@ public class Box
         }
         Items.Add(item);
     }
+
+    public bool RemoveItem(Guid itemId)
+    {
+        var itemsRemoved = Items.RemoveAll(i => i.ItemId == itemId);
+        return itemsRemoved > 0;
+    }
 }

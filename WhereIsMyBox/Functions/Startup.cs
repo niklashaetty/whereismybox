@@ -1,6 +1,7 @@
 using Domain.Repositories;
 using Domain.Services.BoxCreationService;
 using Domain.Services.ItemAddingService;
+using Domain.Services.ItemDeletionService;
 using Domain.Services.UserCreationService;
 using Functions;
 using Infrastructure;
@@ -20,11 +21,16 @@ namespace Functions
         {
             builder.Services.AddLogging();
 
-            builder.Services.AddSingleton<IUserCreationService, UserCreationService>();
+            // Repositories
+            builder.Services.AddSingleton<IBoxRepository, InMemoryBoxRepository>();
             builder.Services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+            
+            // Services
+            builder.Services.AddSingleton<IUserCreationService, UserCreationService>();
             builder.Services.AddSingleton<IBoxCreationService, BoxCreationService>();
             builder.Services.AddSingleton<IItemAddingService, ItemAddingService>();
-            builder.Services.AddSingleton<IBoxRepository, InMemoryBoxRepository>();
+            builder.Services.AddSingleton<IItemDeletionService, ItemDeletionService>();
+            
             
             builder.Services.AddMvcCore().AddNewtonsoftJson(options =>
             {
